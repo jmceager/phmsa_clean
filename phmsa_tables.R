@@ -150,6 +150,7 @@ miles <- read.csv("data/GD_MilesDecadeAge.csv") %>%
 
 
 new.inc <- rbind(goodLoc, badLoc) %>%
+  mutate(STATE = str_sub(ILOC, -2,-1))%>%
   left_join(miles, by = c("OPERATOR_ID", "SYSTEM_TYPE"))%>%
   mutate(mileage = replace_na(mileage, 0))
 
