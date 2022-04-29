@@ -127,7 +127,7 @@ badLoc <- all.inc %>%
 mileCols <- c("system", "Calendar.Year", "State.Abbreviation", "Operator.ID", 
               "Total.Miles.by.Decade", "Total.By.Decade.Miles")
 
-miles <- read.csv("data/GD_MilesDecadeAge.csv") %>%
+miles <- read.csv("data/GD_MilesDecadeAge.csv") %>% 
   mutate(system = "GD (Gas Distribution)") %>%
   select(any_of(mileCols))%>%
   rbind(select(
@@ -141,28 +141,30 @@ miles <- read.csv("data/GD_MilesDecadeAge.csv") %>%
     any_of(mileCols)) %>% 
       mutate(system = "HL (Hazardous Liquids)")
     )%>%
-  rename(mileage = Total.Miles.by.Decade,
+  #make colnames match incident data
+  rename(mileage = Total.Miles.by.Decade, 
          SYSTEM_TYPE = system,
-         OPERATOR_ID = Operator.ID)%>%
-  filter(Calendar.Year == max(Calendar.Year))%>%
-  group_by(OPERATOR_ID, SYSTEM_TYPE)%>%
+         OPERATOR_ID = Operator.ID,
+         STATE = State.Abbreviation,
+         IYEAR = Calendar.Year)%>%
+  #give snapshots of operator's yearly mileage to match incident years
+  group_by(OPERATOR_ID, SYSTEM_TYPE, STATE, IYEAR)%>% 
   summarise(mileage = sum(mileage, na.rm = T))
 
+#until 2021 data is released, use 2020 numbers
+miles <- miles %>%
+  rbind((miles %>% 
+           filter(IYEAR == 2020) %>% 
+           mutate(IYEAR = 2021)))
 
 new.inc <- rbind(goodLoc, badLoc) %>%
   mutate(STATE = str_sub(ILOC, -2,-1))%>%
-  left_join(miles, by = c("OPERATOR_ID", "SYSTEM_TYPE"))%>%
+  left_join(miles, by = c("OPERATOR_ID", "SYSTEM_TYPE", "STATE","IYEAR"))%>%
   mutate(mileage = replace_na(mileage, 0))
-
-
-#need mileage
-
 
 #csv for joined all incidents
 write_csv(new.inc, "./data/all_inc.csv")
 
-
-#Q's for perp walk: what about smaller events that result in more direct impact? smaller spill w/ death vs larger spill without? 
 
 #build walk of shame csv
 #all.inc %>%
