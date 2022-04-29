@@ -115,11 +115,11 @@ all.inc <- rbind(all.gas, all.hl) %>%
 # to add: fix all x miles east places without fixing literal eight mile, al 
 #in other words replace x miles east with y county, state
 goodLoc <- all.inc %>%
-  filter(!grepl("NA", ILOC) & !grepl("Municipality", ILOC))
+  filter(!grepl("NA", ILOC) & !grepl("Municipality", ILOC) & !grepl(" Miles", ILOC))
   
 
 badLoc <- all.inc %>%
-  filter(grepl("NA", ILOC)| grepl("Municipality", ILOC))%>%
+  filter(grepl("NA", ILOC)| grepl("Municipality", ILOC) |  grepl(" Miles", ILOC))%>%
   mutate(ILOC = glue(lat = LOCATION_LATITUDE, lon = LOCATION_LONGITUDE))
 
 
