@@ -165,6 +165,8 @@ new.inc <- rbind(goodLoc, badLoc) %>%
 #csv for joined all incidents
 write_csv(new.inc, "./data/all_inc.csv")
 
+#csv for mileage numbers 
+write_csv(miles, "./data/sys_miles.csv")
 
 #build walk of shame csv
 #all.inc %>%
