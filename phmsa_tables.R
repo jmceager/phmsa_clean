@@ -7,7 +7,7 @@ source("offshorefinder.R")
 
 #columns for gas
 gas_cols <- c("NAME","OPERATOR_ID", "SIGNIFICANT", "IYEAR","LOCAL_DATETIME" ,   
-              "LOCATION_LATITUDE","LOCATION_LONGITUDE",
+              "LOCATION_LATITUDE","LOCATION_LONGITUDE", 
               "UNINTENTIONAL_RELEASE", "INTENTIONAL_RELEASE", "FATALITY_IND","FATAL",
               "INJURY_IND","INJURE","EXPLODE_IND","IGNITE_IND" ,  "NUM_PUB_EVACUATED", "INSTALLATION_YEAR",
               "TOTAL_COST_CURRENT","CAUSE","CAUSE_DETAILS","COMMODITY_RELEASED_TYPE", "NARRATIVE")
@@ -17,6 +17,7 @@ gd.clean <- read_xlsx("./data/incidents/gd2010toPresent.xlsx", sheet = 2) %>%
   mutate(SYSTEM_TYPE = "GD (Gas Distribution)")%>%
   mutate(UNINTENTIONAL_RELEASE = replace_na(UNINTENTIONAL_RELEASE,0), 
          INTENTIONAL_RELEASE = replace_na(INTENTIONAL_RELEASE,0),
+         ON_OFF_SHORE = "ONSHORE",
          UNITS = "mscf",
          TOTAL_RELEASE = UNINTENTIONAL_RELEASE + INTENTIONAL_RELEASE,
          TOTAL_COST_CURRENT = replace_na(parse_number(TOTAL_COST_CURRENT), 0),
@@ -55,7 +56,7 @@ all.gas <- read_xlsx("./data/incidents/gtggungs2010toPresent.xlsx", sheet = 2) %
                                sep = ", ")
          )
   )%>%
-  select(!c("ON_OFF_SHORE","ONSHORE_CITY_NAME","OFFSHORE_COUNTY_NAME",
+  select(!c("ONSHORE_CITY_NAME","OFFSHORE_COUNTY_NAME",
             "ONSHORE_STATE_ABBREVIATION", "OFFSHORE_STATE_ABBREVIATION"))%>%
   rbind( gd.clean)
   
