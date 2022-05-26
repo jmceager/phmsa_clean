@@ -9,7 +9,8 @@ source("offshorefinder.R")
 gas_cols <- c("NAME","OPERATOR_ID", "SIGNIFICANT", "IYEAR","LOCAL_DATETIME" ,   
               "LOCATION_LATITUDE","LOCATION_LONGITUDE", 
               "UNINTENTIONAL_RELEASE", "INTENTIONAL_RELEASE", "FATALITY_IND","FATAL",
-              "INJURY_IND","INJURE","EXPLODE_IND","IGNITE_IND" ,  "NUM_PUB_EVACUATED", "INSTALLATION_YEAR",
+              "INJURY_IND","INJURE","EXPLODE_IND","IGNITE_IND" ,  "NUM_PUB_EVACUATED", 
+              "INSTALLATION_YEAR", "SYSTEM_PART_INVOLVED",
               "TOTAL_COST_CURRENT","CAUSE","CAUSE_DETAILS","COMMODITY_RELEASED_TYPE", "NARRATIVE")
 #join
 gd.clean <- read_xlsx("./data/incidents/gd2010toPresent.xlsx", sheet = 2) %>%
@@ -69,7 +70,8 @@ hl_cols <- c("NAME","OPERATOR_ID", "SIGNIFICANT", "IYEAR","LOCAL_DATETIME" ,
               "ON_OFF_SHORE","ONSHORE_CITY_NAME","OFFSHORE_COUNTY_NAME",
              "ONSHORE_STATE_ABBREVIATION", "OFFSHORE_STATE_ABBREVIATION",
               "UNINTENTIONAL_RELEASE_BBLS", "INTENTIONAL_RELEASE_BBLS", "FATALITY_IND","FATAL",
-              "INJURY_IND","INJURE","EXPLODE_IND","IGNITE_IND" ,  "NUM_PUB_EVACUATED", "INSTALLATION_YEAR",
+              "INJURY_IND","INJURE","EXPLODE_IND","IGNITE_IND" ,  "NUM_PUB_EVACUATED", 
+             "INSTALLATION_YEAR", "SYSTEM_PART_INVOLVED",
               "TOTAL_COST_CURRENT","CAUSE", "CAUSE_DETAILS","COMMODITY_RELEASED_TYPE", "NARRATIVE")
 #cleaning
 all.hl <- read_xlsx("./data/incidents/hl2010toPresent.xlsx", sheet = 2)%>%
@@ -97,7 +99,7 @@ all.hl <- read_xlsx("./data/incidents/hl2010toPresent.xlsx", sheet = 2)%>%
                                sep = ", ")
                          )
         ) %>%
-  select(!c("ON_OFF_SHORE","ONSHORE_CITY_NAME","OFFSHORE_COUNTY_NAME",
+  select(!c("ONSHORE_CITY_NAME","OFFSHORE_COUNTY_NAME",
             "ONSHORE_STATE_ABBREVIATION", "OFFSHORE_STATE_ABBREVIATION"))
   
 
@@ -129,7 +131,7 @@ mileCols <- c("system", "Calendar.Year", "State.Abbreviation", "Operator.ID",
               "Total.Miles.by.Decade", "Total.By.Decade.Miles")
 
 miles <- read.csv("data/GD_MilesDecadeAge.csv") %>% 
-  mutate(system = "GD (Gas Distribution)") %>%
+  mutate(system = "GD (Gas Distribution)") %>% 
   select(any_of(mileCols))%>%
   rbind(select(
     read.csv("data/GT_MilesDecadeAge.csv"), 
@@ -151,12 +153,6 @@ miles <- read.csv("data/GD_MilesDecadeAge.csv") %>%
   #give snapshots of operator's yearly mileage to match incident years
   group_by(OPERATOR_ID, SYSTEM_TYPE, STATE, IYEAR)%>% 
   summarise(mileage = sum(mileage, na.rm = T))
-
-#until 2021 data is released, use 2020 numbers
-miles <- miles %>%
-  rbind((miles %>% 
-           filter(IYEAR == 2020) %>% 
-           mutate(IYEAR = 2021)))
 
 new.inc <- rbind(goodLoc, badLoc) %>%
   mutate(STATE = str_sub(ILOC, -2,-1))%>%
