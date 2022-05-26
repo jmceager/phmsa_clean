@@ -58,6 +58,6 @@ rsconnect/
 /*_files/
 
 # Prevent mac users to commit .DS_Store files
-*.DS_Store
+.DS_Store
 
 # End of https://www.toptal.com/developers/gitignore/api/r
