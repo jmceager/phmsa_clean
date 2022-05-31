@@ -6,14 +6,14 @@ library(readxl)
 source("offshorefinder.R")
 
 #columns for gas
-gas_cols <- c("NAME","OPERATOR_ID", "SIGNIFICANT", "IYEAR","LOCAL_DATETIME" ,   
+gas_cols <- c( "REPORT_NUMBER", "NAME","OPERATOR_ID", "SIGNIFICANT", "IYEAR","LOCAL_DATETIME" ,   
               "LOCATION_LATITUDE","LOCATION_LONGITUDE", 
               "UNINTENTIONAL_RELEASE", "INTENTIONAL_RELEASE", "FATALITY_IND","FATAL",
               "INJURY_IND","INJURE","EXPLODE_IND","IGNITE_IND" ,  "NUM_PUB_EVACUATED", 
               "INSTALLATION_YEAR", "SYSTEM_PART_INVOLVED",
               "TOTAL_COST_CURRENT","CAUSE","CAUSE_DETAILS","COMMODITY_RELEASED_TYPE", "NARRATIVE")
 #join
-gd.clean <- read_xlsx("./data/incidents/gd2010toPresent.xlsx", sheet = 2) %>%
+gd.clean <- read_xlsx("./data/incidents/gd2010toPresent.xlsx", sheet = 2) %>% 
   select(all_of(  append(gas_cols,c("LOCATION_CITY_NAME","LOCATION_STATE_ABBREVIATION"))))%>%
   mutate(SYSTEM_TYPE = "GD (Gas Distribution)")%>%
   mutate(UNINTENTIONAL_RELEASE = replace_na(UNINTENTIONAL_RELEASE,0), 
@@ -65,7 +65,7 @@ all.gas <- read_xlsx("./data/incidents/gtggungs2010toPresent.xlsx", sheet = 2) %
 
 #fix hl to be similar
 #cols
-hl_cols <- c("NAME","OPERATOR_ID", "SIGNIFICANT", "IYEAR","LOCAL_DATETIME" , 
+hl_cols <- c("REPORT_NUMBER","NAME","OPERATOR_ID", "SIGNIFICANT", "IYEAR","LOCAL_DATETIME" , 
               "LOCATION_LATITUDE","LOCATION_LONGITUDE", 
               "ON_OFF_SHORE","ONSHORE_CITY_NAME","OFFSHORE_COUNTY_NAME",
              "ONSHORE_STATE_ABBREVIATION", "OFFSHORE_STATE_ABBREVIATION",
@@ -74,7 +74,7 @@ hl_cols <- c("NAME","OPERATOR_ID", "SIGNIFICANT", "IYEAR","LOCAL_DATETIME" ,
              "INSTALLATION_YEAR", "SYSTEM_PART_INVOLVED",
               "TOTAL_COST_CURRENT","CAUSE", "CAUSE_DETAILS","COMMODITY_RELEASED_TYPE", "NARRATIVE")
 #cleaning
-all.hl <- read_xlsx("./data/incidents/hl2010toPresent.xlsx", sheet = 2)%>%
+all.hl <- read_xlsx("./data/incidents/hl2010toPresent.xlsx", sheet = 2)%>% 
   select(hl_cols)%>%
   mutate(SYSTEM_TYPE = "HL (Hazardous Liquids)")%>%
   rename( INTENTIONAL_RELEASE = INTENTIONAL_RELEASE_BBLS,
